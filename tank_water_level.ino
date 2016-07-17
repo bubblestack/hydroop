@@ -1,3 +1,15 @@
+/*
+Using this sketch you can calculate water volume in cylinder.
+Based on ultrasonic sensor and NewPing library(which provides output smoothing).
+tH = Total Height (tank height)
+distance = Difference between ultrasonic sensor and water surface. (automaticaly calculated)
+f= Fill height calculated by: tH - distance 
+v= volume calculated by: V(tank) = (πr2*f/1000)
+bubblestack - 2016
+by 
+Nika Chkhikvishvili & Davit Gokadze
+http://bubblestack.io
+*/
 
 #include <NewPing.h>
 
@@ -27,10 +39,6 @@ void loop() {
    distance=(uS / US_ROUNDTRIP_CM); // calculate distance 
    f=(tH-distance); //  calculate fill height of tank
    volume=(Pi*sqr_R*f/1000); // calculate volume of liquid 
-  Serial.println(volume);
-   
-
-  
-  
+    Serial.println(volume);
   
  }
