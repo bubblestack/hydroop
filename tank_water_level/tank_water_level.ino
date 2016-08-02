@@ -15,16 +15,17 @@ http://bubblestack.io
 
 #define TRIGGER_PIN  12
 #define ECHO_PIN     13
-#define MAX_DISTANCE 200 // donot increse this range for HY-SRF05  sensor.
+#define MAX_DISTANCE 150 // donot increse this range for HY-SRF05  sensor.
 
 float distance;
-float tH=86; // Total Height of Tank in cm. 
-float radius=10;
+float tH=80; // Total Height of Tank in cm. 
+float radius=38;
 float sqr_R=sq(radius); // Square Radius of Tank 10cm*10cm;
 float litre=1000; //1 litre 1000 ml;
 float volume;
 float f; // fill height
 float Pi=3.14; 
+
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
  
@@ -34,11 +35,19 @@ void setup() {
  
 void loop() {
   delay(1000);
-  int uS = sonar.ping_median(15); // median filter, error correction 
+  int uS = sonar.ping_median(15) ; // median filter, error correction 
    distance=(uS / US_ROUNDTRIP_CM); // calculate distance 
    f=(tH-distance); //  calculate fill height of tank
    volume=(Pi*sqr_R*f/1000); // calculate volume of liquid 
-    //   Serial.println(distance); // debug
+       Serial.print("Distance: ");
+       Serial.println(distance); // debug 
+       Serial.print("Square Radius: ");
+       Serial.println(sqr_R);
+       Serial.print("Total Heilght: ");
+       Serial.println(tH);
+       Serial.print("FILL Height: ");
+       Serial.println(f);
+
    if (distance != 0.00 ) { // error detection & hot add
     Serial.print(volume);
       Serial.println(" L");
