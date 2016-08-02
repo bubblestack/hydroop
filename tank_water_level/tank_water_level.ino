@@ -15,16 +15,17 @@ http://bubblestack.io
 
 #define TRIGGER_PIN  12
 #define ECHO_PIN     13
-#define MAX_DISTANCE 150 // donot increse this range for HY-SRF05  sensor.
+#define MAX_DISTANCE 200// donot increse this range for HY-SRF05  sensor.
 
-float distance;
+float distance; // just vaiable declaration.
 float tH=80; // Total Height of Tank in cm. 
-float radius=38;
-float sqr_R=sq(radius); // Square Radius of Tank 10cm*10cm;
-float litre=1000; //1 litre 1000 ml;
+int  offset=35; // Difference above tank total height and ultrasonic placement in cm. this value depends on installation and its constant.
+float radius=38; // radius of tank.
+float sqr_R=sq(radius); // Square Radius of Tank 10cm*10cm.
+float litre=1000; //1 litre 1000 ml.
 float volume;
-float f; // fill height
-float Pi=3.14; 
+float f; // water/liquid fill height.
+float Pi=3.14; // no comments.
 
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
@@ -36,9 +37,11 @@ void setup() {
 void loop() {
   delay(1000);
   int uS = sonar.ping_median(15) ; // median filter, error correction 
-   distance=(uS / US_ROUNDTRIP_CM); // calculate distance 
+   distance=(uS / US_ROUNDTRIP_CM - offset); // calculate distance 
    f=(tH-distance); //  calculate fill height of tank
    volume=(Pi*sqr_R*f/1000); // calculate volume of liquid 
+
+/*   ************** for DEBUG *****************
        Serial.print("Distance: ");
        Serial.println(distance); // debug 
        Serial.print("Square Radius: ");
@@ -47,8 +50,17 @@ void loop() {
        Serial.println(tH);
        Serial.print("FILL Height: ");
        Serial.println(f);
+       Serial.print("Formula: ");
+       Serial.print( Pi );
+       Serial.print(" * ");
+       Serial.print(sqr_R);
+       Serial.print(" * ");
+       Serial.print(f);
+       Serial.println(" /1000");
+*/
+      
 
-   if (distance != 0.00 ) { // error detection & hot add
+   if (distance > 0) { // error detection & hot add
     Serial.print(volume);
       Serial.println(" L");
    } else  {
@@ -56,3 +68,5 @@ void loop() {
    }
   
  }
+ 
+
