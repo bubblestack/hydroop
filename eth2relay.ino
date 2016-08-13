@@ -21,9 +21,9 @@ boolean reading = false;
 
 
 
-int SER_Pin = 6;   //pin 14 on the 75HC595
-int RCLK_Pin = 7;  //pin 12 on the 75HC595
-int SRCLK_Pin = 5; //pin 11 on the 75HC595
+int SER_Pin = 6;   //pin 14 on the 75HC595  ------------- BLUE
+int RCLK_Pin = 7;  //pin 12 on the 75HC595  -------------  GREEN
+int SRCLK_Pin = 5; //pin 11 on the 75HC595 ------------ YELLOW
 
 //How many of the shift registers - change this
 #define number_of_74hc595s 2
