@@ -1,8 +1,8 @@
 
 #include <ESP8266WiFi.h>
 
-const char* ssid = "bubblestack.io";
-const char* password = "@ut0mN5050";
+const char* ssid = "";
+const char* password = "";
 
 
 WiFiServer server(80);
