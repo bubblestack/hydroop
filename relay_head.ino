@@ -1,10 +1,19 @@
+/*
+ *  This sketch demonstrates how to set up a simple HTTP-like server.
+ *  The server will set a GPIO pin depending on the request
+ *    http://server_ip/gpio/0 will set the GPIO2 low,
+ *    http://server_ip/gpio/1 will set the GPIO2 high
+ *  server_ip is the IP address of the ESP8266 module, will be 
+ *  printed to Serial when the module is connected.
+ */
 
 #include <ESP8266WiFi.h>
 
 const char* ssid = "";
 const char* password = "";
 
-
+// Create an instance of the server
+// specify the port to listen on as an argument
 WiFiServer server(80);
 
 void setup() {
@@ -19,9 +28,8 @@ void setup() {
   pinMode(5, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(2, OUTPUT);
-  pinMode(1, OUTPUT);
- // pinMode(0, OUTPUT);
-  
+ // pinMode(1, OUTPUT);
+  pinMode(4, OUTPUT);
  
  // clear relay state 
   
@@ -32,9 +40,9 @@ void setup() {
   digitalWrite(5, 1);
   digitalWrite(3, 1);
   digitalWrite(2, 1);
-  digitalWrite(1, 1);  
-  //digitalWrite(0, LOW);   
-  
+ // digitalWrite(1, 1);  
+  digitalWrite(4, 1);   
+
   
   // Connect to WiFi network
   Serial.println();
@@ -81,15 +89,15 @@ void loop() {
  int pin;
  int state;
 
-// # ESP8266   GPIO 1 = pin 3
+// # ESP8266   GPIO 4 = pin  22
   if (req.indexOf("/gpio/1/1") != -1)
   {
-    pin= 1; 
+    pin= 4; 
     state = 0;
   }
   if (req.indexOf("/gpio/1/0") != -1)
   {
-    pin = 1;
+    pin = 4;
     state = 1;
   }
 //# ESP8266   GPIO 2 = pin 20
@@ -105,7 +113,7 @@ void loop() {
   }
 
 
-//# ESP8266   GPIO 5 = PIN 11
+//# ESP8266   GPIO 5 = PIN 11 
   if (req.indexOf("/gpio/3/1") != -1)
   {
     pin= 5; 
@@ -187,16 +195,18 @@ void loop() {
   
   client.flush();
 
-  // response
+  // Prepare the response
   String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nRELAY: ";
   s += (pin);
   s += (" is: " );
   s += (state);
   s += "</html>\n";
 
-  // response to the client
+  // Send the response to the client
   client.print(s);
   delay(1);
   Serial.println("Client disonnected");
 
+  // The client will actually be disconnected 
+  // when the function returns and 'client' object is detroyed
 }
