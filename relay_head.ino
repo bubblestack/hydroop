@@ -1,16 +1,13 @@
-/*
- *  This sketch demonstrates how to set up a simple HTTP-like server.
- *  The server will set a GPIO pin depending on the request
- *    http://server_ip/gpio/0 will set the GPIO2 low,
- *    http://server_ip/gpio/1 will set the GPIO2 high
- *  server_ip is the IP address of the ESP8266 module, will be 
- *  printed to Serial when the module is connected.
- */
 
+// even odd
+// odd
 #include <ESP8266WiFi.h>
 
-const char* ssid = "";
-const char* password = "";
+const char* ssid = "...";
+const char* password = "...";
+IPAddress ip(2, 2, 2, 224);   
+IPAddress gateway(2,2,2,2);
+IPAddress subnet(255,255,255,0);
 
 // Create an instance of the server
 // specify the port to listen on as an argument
@@ -30,6 +27,7 @@ void setup() {
   pinMode(2, OUTPUT);
  // pinMode(1, OUTPUT);
   pinMode(4, OUTPUT);
+    pinMode(15, OUTPUT);
  
  // clear relay state 
   
@@ -42,7 +40,7 @@ void setup() {
   digitalWrite(2, 1);
  // digitalWrite(1, 1);  
   digitalWrite(4, 1);   
-
+    digitalWrite(15, 1); 
   
   // Connect to WiFi network
   Serial.println();
@@ -50,6 +48,7 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   
+  WiFi.config(ip, gateway, subnet);
   WiFi.begin(ssid, password);
   
   while (WiFi.status() != WL_CONNECTED) {
@@ -88,104 +87,131 @@ void loop() {
   // Match the request
  int pin;
  int state;
-
+ int relay;
+ String pwr_state;
+ 
 // # ESP8266   GPIO 4 = pin  22
-  if (req.indexOf("/gpio/1/1") != -1)
+  if (req.indexOf("/gpio/2/1") != -1)
   {
     pin= 4; 
     state = 0;
+    relay = 2;
+
   }
-  if (req.indexOf("/gpio/1/0") != -1)
+  else if (req.indexOf("/gpio/2/0") != -1)
   {
     pin = 4;
     state = 1;
+    relay = 2;
   }
 //# ESP8266   GPIO 2 = pin 20
-  if (req.indexOf("/gpio/2/1") != -1)
+  else if (req.indexOf("/gpio/4/1") != -1)
   {
     pin= 2; 
     state = 0;
+    relay = 4;
+    
   }
-  if (req.indexOf("/gpio/2/0") != -1)
+  else if (req.indexOf("/gpio/4/0") != -1)
   {
     pin = 2;
     state = 1;
+    relay = 4;
   }
 
 
 //# ESP8266   GPIO 5 = PIN 11 
-  if (req.indexOf("/gpio/3/1") != -1)
+  else if (req.indexOf("/gpio/6/1") != -1)
   {
     pin= 5; 
     state = 0;
+    relay = 6;
   }
-  if (req.indexOf("/gpio/3/0") != -1)
+  else if (req.indexOf("/gpio/6/0") != -1)
   {
     pin = 5;
     state = 1;
+    relay = 6;
   }
 //# ESP8266   GPIO 12 = pin 16
-  if (req.indexOf("/gpio/4/1") != -1)
+  else if (req.indexOf("/gpio/8/1") != -1)
   {
     pin= 12; 
     state = 0;
+    relay = 8;
   }
-  if (req.indexOf("/gpio/4/0") != -1)
+  else if (req.indexOf("/gpio/8/0") != -1)
   {
     pin = 12;
     state = 1;
+    relay = 8;
   }
 
 //# ESP8266   GPIO 13 = pin 18 
-  if (req.indexOf("/gpio/5/1") != -1)
+  else if (req.indexOf("/gpio/10/1") != -1)
   {
     pin= 13; 
     state = 0;
+    relay = 10;
   }
-  if (req.indexOf("/gpio/5/0") != -1)
+  else if (req.indexOf("/gpio/10/0") != -1)
   {
     pin = 13;
     state = 1;
+    relay = 10;
   }
 
 //# ESP8266   GPIO 14 = pin 17
-  if (req.indexOf("/gpio/6/1") != -1)
+  else if (req.indexOf("/gpio/12/1") != -1)
   {
     pin= 14; 
     state = 0;
+    relay = 12;
   }
-  if (req.indexOf("/gpio/6/0") != -1)
+  else if (req.indexOf("/gpio/12/0") != -1)
   {
     pin = 14;
     state = 1;
+    relay = 12;
   }
 
 
 //# ESP8266   GOPIO 3 = pin 4
-  if (req.indexOf("/gpio/7/1") != -1)
+  else if (req.indexOf("/gpio/14/1") != -1)
   {
     pin= 3; 
     state = 0;
+    relay = 14;
   }
-  if (req.indexOf("/gpio/7/0") != -1)
+ else if (req.indexOf("/gpio/14/0") != -1)
   {
     pin = 3;
     state = 1;
+    relay = 14;
   }
 
-
-
 //# ESP8266   GPIO 16 = pin 15
-  if (req.indexOf("/gpio/8/1") != -1)
+ else if (req.indexOf("/gpio/16/1") != -1)
+
   {
     pin= 16; 
     state = 0;
-  }
-  if (req.indexOf("/gpio/8/0") != -1)
+    relay = 16;
+    
+  } else if (req.indexOf("/gpio/16/0") != -1)
+  
   {
     pin = 16;
     state = 1;
+    relay = 16;
+  
+
+} else {
+    client.println("invalid request");
+    client.stop();
+    return;
   }
+
 
   digitalWrite(pin, state);
       Serial.print("pin: ");
@@ -195,12 +221,17 @@ void loop() {
   
   client.flush();
 
+if (state == 0 ) {
+  pwr_state = "on";
+} else {
+  pwr_state = "off";
+} 
   // Prepare the response
-  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nRELAY: ";
-  s += (pin);
-  s += (" is: " );
-  s += (state);
-  s += "</html>\n";
+  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\nRELAY: ";
+  s += (relay);
+  s += ("\nSTATE\: " );
+  s += pwr_state;
+  s += "\n";
 
   // Send the response to the client
   client.print(s);
